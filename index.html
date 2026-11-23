@@ -38,6 +38,8 @@
   #honk { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(160px + env(safe-area-inset-bottom, 0px)); font: inherit; font-weight: 700; font-size: 20px; background: var(--coin); color: var(--ink); border: 3px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); padding: 8px 18px; cursor: pointer; }
   #toyBtn { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(24px + env(safe-area-inset-bottom, 0px)); max-width: calc(100% - 32px); font: inherit; font-weight: 700; font-size: 20px; background: #b28dff; color: #fff; border: 3px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); padding: 8px 20px; cursor: pointer; }
   #talkBtn { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(24px + env(safe-area-inset-bottom, 0px)); max-width: calc(100% - 32px); font: inherit; font-weight: 700; font-size: 20px; background: #3fc1c9; color: var(--ink); border: 3px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); padding: 8px 20px; cursor: pointer; }
+  #chopBtn { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(24px + env(safe-area-inset-bottom, 0px)); max-width: calc(100% - 32px); font: inherit; font-weight: 700; font-size: 20px; background: #8b5a2b; color: #fff; border: 3px solid var(--ink); border-radius: 18px; box-shadow: 0 5px 0 var(--ink); padding: 8px 20px; cursor: pointer; }
+  #chopBtn:focus-visible { outline: 4px solid var(--berry); outline-offset: 3px; }
   #talk { position: fixed; left: 50%; transform: translateX(-50%); top: calc(120px + env(safe-area-inset-top, 0px)); width: min(460px, calc(100% - 32px)); box-sizing: border-box; background: var(--paper); border: 3px solid var(--ink); border-radius: 20px; box-shadow: 0 6px 0 var(--ink); padding: 12px 16px 14px; text-align: center; }
   #talk .who { font-weight: 700; font-size: 18px; color: var(--berry); }
   #talk p { margin: 6px 0 12px; font-size: 20px; font-weight: 600; text-wrap: balance; }
@@ -177,6 +179,7 @@
 <button id="honk" hidden>📯 Honk (H)</button>
 <button id="toyBtn" hidden></button>
 <button id="talkBtn" hidden></button>
+<button id="chopBtn" hidden></button>
 <div id="talk" hidden><div class="who" id="talkWho"></div><p id="talkText"></p><div class="btnrow"><button class="bigbtn" id="talkMore">Talk more 💬</button><button class="bigbtn alt" id="talkBye">Bye! 👋</button></div></div>
 <button id="sleep" hidden>Go to sleep 💤 (press E)</button>
 <div id="fade" aria-live="polite"></div>
@@ -612,16 +615,16 @@
     const solid = (m) => { const p2 = m.position, gw = m.geometry.parameters; stableCols.push({ x1: p2.x - gw.width / 2, x2: p2.x + gw.width / 2, z1: p2.z - gw.depth / 2, z2: p2.z + gw.depth / 2, h: 3, off: true }); colliders.push(stableCols[stableCols.length - 1]); return m; };
     B(8, 0.04, 12, 0xd8b56a, 30, 0, -18);
     solid(B(0.3, 3, 12, red, 33.85, 0, -18));
-    solid(B(8, 3, 0.3, red, 30, 0, -23.85)); solid(B(8, 3, 0.3, red, 30, 0, -12.15));
-    [-23.85, -18, -12.15].forEach((z) => B(0.3, 3, 0.3, white, 26.15, 0, z));
-    B(0.3, 0.4, 12.3, white, 26.15, 2.6, -18);
+    solid(B(7.4, 2.98, 0.3, red, 29.99, 0, -23.85)); solid(B(7.4, 2.98, 0.3, red, 29.99, 0, -12.15)); // walls stop short of the posts and back wall so nothing overlaps
+    [-23.85, -18, -12.15].forEach((z) => B(0.36, 3.06, 0.36, white, 26.12, 0, z));
+    B(0.32, 0.42, 12.4, white, 26.12, 2.6, -18);
     const r1 = B(4.75, 0.22, 12.8, 0x7a1f16, 28, 2.95, -18); r1.rotation.z = 0.45;
     const r2 = B(4.75, 0.22, 12.8, 0x7a1f16, 32, 2.95, -18); r2.rotation.z = -0.45;
-    [-23.85, -12.15].forEach((z) => { const sh = new THREE.Shape(); sh.moveTo(-4, 0); sh.lineTo(4, 0); sh.lineTo(0, 1.9); sh.lineTo(-4, 0); const tri = new THREE.Mesh(new THREE.ShapeGeometry(sh), new THREE.MeshLambertMaterial({ color: red, side: THREE.DoubleSide })); tri.position.set(30, 3, z); r1.parent.add(tri); });
+    [-23.85, -12.15].forEach((z) => { const sh = new THREE.Shape(); sh.moveTo(-4, 0); sh.lineTo(4, 0); sh.lineTo(0, 1.9); sh.lineTo(-4, 0); const tri = new THREE.Mesh(new THREE.ShapeGeometry(sh), new THREE.MeshLambertMaterial({ color: red, side: THREE.DoubleSide })); tri.position.set(30, 3.0, z + (z < -18 ? -0.17 : 0.17)); r1.parent.add(tri); });
     STALL_Z.slice(1).forEach((zc) => solid(B(4.8, 1.4, 0.15, wood, 31.5, 0, zc - 1.5)));
     STALL_Z.forEach((zc) => {
       B(0.5, 0.4, 1.8, wood, 33.35, 0, zc); B(0.42, 0.1, 1.7, [0xff8c1a, 0x7ccf6b, 0xff4d6d, 0xffd23f][STALL_Z.indexOf(zc)], 33.35, 0.4, zc);
-      B(0.7, 0.5, 0.9, hay, 33.2, 0, zc + (zc % 4 ? 0.6 : -0.6) * 0);
+      B(0.7, 0.55, 0.5, hay, 33.2, 0, zc - 1.1);
     });
     B(0.6, 0.45, 2.4, 0x9aa5b1, 27.0, 0, -22.4); B(0.5, 0.05, 2.3, 0x4fc3ff, 27.0, 0.42, -22.4);
     const board = label('PET BARN', '#ffd6a5', '#2b2140', 3.2, 0.7); board.rotation.y = -Math.PI / 2; board.position.set(25.95, 3.15, -18); furniture._stableBoard = board;
@@ -957,9 +960,9 @@
   while (placed < 45) {
     const x = (rnd() * 2 - 1) * (W - 3), z = (rnd() * 2 - 1) * (W - 3);
     if (!clear(x, z)) continue;
-    const trunk = box(0.5, 1.6, 0.5, 0x8b5a2b, x, 0, z, true); treeSpots.push({ x, z });
+    const trunk = box(0.5, 1.6, 0.5, 0x8b5a2b, x, 0, z, true); treeSpots.push({ x, z, trunk });
     const leaves = new THREE.Mesh(new THREE.SphereGeometry(1.4 + rnd() * 0.6, 12, 10), mat(rnd() > 0.5 ? 0x3fae5a : 0x55c46b));
-    leaves.position.set(x, 2.6, z); scene.add(leaves);
+    leaves.position.set(x, 2.6, z); scene.add(leaves); treeSpots[treeSpots.length - 1].leaves = leaves;
     placed++;
   }
   const flowerColors = [0xff6b8b, 0xffc93c, 0xffffff, 0xb28dff];
@@ -1150,6 +1153,13 @@
     document.getElementById('shopCoins').textContent = coins;
     document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.tab === tab));
     gridEl.innerHTML = '';
+    if (save.wood > 0) {
+      const card = document.createElement('div'); card.className = 'item';
+      card.innerHTML = '<div class="icon">🪵</div><div class="name">Your wood (' + save.wood + ')</div>';
+      const btn = document.createElement('button'); btn.innerHTML = 'Sell all for <span class="coin"></span> ' + save.wood * 2;
+      btn.addEventListener('click', () => { const n = save.wood; save.wood = 0; addCoins(n * 2); store(); updateCarrots(); chime([659, 784, 988]); showToast('You sold ' + n + ' wood for ' + n * 2 + ' coins! 🪙'); renderShop(); });
+      card.appendChild(btn); gridEl.appendChild(card);
+    }
     shopItems[tab].forEach((it) => {
       const card = document.createElement('div'); card.className = 'item';
       const pic = document.createElement('div');
@@ -1229,7 +1239,7 @@
   delete save.carrots;
   const foodEl = document.getElementById('foodbag');
   const totalFood = () => crops.reduce((n, c) => n + (save.food[c.id] || 0), 0);
-  const updateCarrots = () => (foodEl.textContent = crops.map((c) => c.icon + ' ' + (save.food[c.id] || 0)).join('   ') + '   🍞 ' + (save.food.bread || 0) + [['apple', '🍎'], ['orange', '🍊'], ['pizza', '🍕'], ['salad', '🥗'], ['soup', '🍲'], ['sandwich', '🥪'], ['pancakes', '🥞'], ['pie', '🥧'], ['juice', '🧃'], ['cookie', '🍪'], ['donut', '🍩'], ['cupcake', '🧁']].map(([k, i]) => (save.food[k] ? '   ' + i + ' ' + save.food[k] : '')).join(''));
+  const updateCarrots = () => (foodEl.textContent = crops.map((c) => c.icon + ' ' + (save.food[c.id] || 0)).join('   ') + '   🍞 ' + (save.food.bread || 0) + [['apple', '🍎'], ['orange', '🍊'], ['pizza', '🍕'], ['salad', '🥗'], ['soup', '🍲'], ['sandwich', '🥪'], ['pancakes', '🥞'], ['pie', '🥧'], ['juice', '🧃'], ['cookie', '🍪'], ['donut', '🍩'], ['cupcake', '🧁']].map(([k, i]) => (save.food[k] ? '   ' + i + ' ' + save.food[k] : '')).join('') + (save.wood ? '   🪵 ' + save.wood : ''));
   updateCarrots();
   plots.forEach((p) => {
     const g = new THREE.Group(); g.position.set(p.x, 0.25, p.z);
@@ -1344,7 +1354,7 @@
         if (lum < 0.18) return; // keep noses and dark spots
         c.lerp(fc, 0.65);
       });
-      const deco = emojiSprite(f.icon, false); scene.remove(deco); deco.scale.set(0.38, 0.38, 1); deco.position.set(0, pet.top - 0.02, 0); pet.body.add(deco);
+      const deco = emojiSprite(f.icon, false); deco.material.depthTest = true; scene.remove(deco); deco.scale.set(0.38, 0.38, 1); deco.position.set(0, pet.top - 0.02, 0); pet.body.add(deco);
       pet.top += 0.35;
       return pet;
     }
@@ -1500,7 +1510,7 @@
   function updatePlates() {
     if (plates.length) return;
     STALL_FOOD.forEach((f, i) => {
-      const sp = emojiSprite(cropIcon(f), true); scene.remove(sp); sp.scale.set(0.6, 0.6, 1); sp.position.set(29.0, 2.0, STALL_Z[i]); furniture.stable.add(sp); plates.push(sp);
+      const sp = emojiSprite(cropIcon(f), true); sp.material.depthTest = true; scene.remove(sp); sp.scale.set(0.6, 0.6, 1); sp.position.set(29.0, 2.0, STALL_Z[i]); furniture.stable.add(sp); plates.push(sp);
     });
   }
   function updatePets(now, dt) {
@@ -2277,6 +2287,7 @@
     if (x > -23.5 && x < -12.5 && z > -22.5 && z < -13.5) return false;     // the farm
     if (pads.some((p) => Math.hypot(x - p.x, z - p.z) < 2.2)) return false;
     if (planted.some((p) => Math.hypot(x - p.t.x, z - p.t.z) < 1.8)) return false;
+    if (treeSpots.some((t) => t.down && !t.cleared && Math.hypot(x - t.x, z - t.z) < 1.2)) return false;
     for (const c of colliders) { if (!c.off && x + 0.8 > c.x1 && x - 0.8 < c.x2 && z + 0.8 > c.z1 && z - 0.8 < c.z2) return false; }
     return true;
   }
@@ -2803,7 +2814,7 @@
   }
   function peekyHide() {
     // pick a tree not too close and not too far, and stand just behind it, peeking out
-    const spots = treeSpots.filter((t) => { const d = Math.hypot(t.x - player.x, t.z - player.z); return d > 9 && d < 24; });
+    const spots = treeSpots.filter((t) => { if (t.down) return false; const d = Math.hypot(t.x - player.x, t.z - player.z); return d > 9 && d < 24; });
     if (!spots.length) return false;
     const t = spots[Math.floor(Math.random() * spots.length)];
     const dx = t.x - player.x, dz = t.z - player.z, d = Math.hypot(dx, dz), ux = dx / d, uz = dz / d, side = Math.random() < 0.5 ? -1 : 1;
@@ -2840,6 +2851,93 @@
       chime(caught ? [880, 660, 440] : [330, 494]);
       if (caught && !pk.metToast) { pk.metToast = true; showToast('Zoom! That was Peeky, the night shadow. It is shy! 👀'); }
     }
+  }
+
+  // ---------- chopping down trees ----------
+  const REGROW_MS = 5 * 60 * 1000; // a chopped tree grows back after 5 minutes, unless you chop the stump too
+  save.chopped = save.chopped || {};
+  save.cleared = save.cleared || {};
+  const chopEl = document.getElementById('chopBtn');
+  let chopNear = null, chopAnim = null, chopHits = 0;
+  function setTreeDown(t, down) {
+    t.down = down; t.trunk.visible = !down; t.leaves.visible = !down; t.trunk.userData.col.off = down;
+    if (down && !t.stump) { t.stump = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.32, 0.3, 12), mat(0x8b5a2b)); t.stump.position.set(t.x, 0.15, t.z); const top = new THREE.Mesh(new THREE.CircleGeometry(0.27, 12), mat(0xe0b77a)); top.rotation.x = -Math.PI / 2; top.position.y = 0.151; t.stump.add(top); scene.add(t.stump); }
+    if (t.stump) t.stump.visible = down && !t.cleared;
+  }
+  treeSpots.forEach((t, i) => {
+    t.i = i;
+    if (save.cleared[i]) { t.cleared = true; setTreeDown(t, true); }
+    else if (save.chopped[i] && Date.now() - save.chopped[i] < REGROW_MS) setTreeDown(t, true);
+    else delete save.chopped[i];
+  });
+  function chopTargets() {
+    const out = [];
+    treeSpots.forEach((t) => { if (!t.cleared) out.push({ kind: t.down ? 'stump' : 'tree', t, x: t.x, z: t.z, hits: t.down ? 2 : 3 }); });
+    planted.forEach((pl) => out.push({ kind: 'planted', pl, x: pl.t.x, z: pl.t.z, hits: 3 }));
+    return out;
+  }
+  function chips(x, z) { for (let i = 0; i < 6; i++) { const c = emojiSprite(i % 2 ? '🍃' : '🟫', false); c.scale.set(0.2, 0.2, 1); hearts.push({ s: c, x: x + (Math.random() - 0.5), z: z + (Math.random() - 0.5), y: 0.6 + Math.random(), life: 0.7 }); } }
+  function fallOver(meshes, x, z, done) {
+    const pivot = new THREE.Group(); pivot.position.set(x, 0, z); scene.add(pivot);
+    meshes.forEach((m) => pivot.add(m));
+    const ax = new THREE.Vector3(z - player.z, 0, -(x - player.x)).normalize();
+    chopAnim = { pivot, ax, t: 0, done };
+    chime([392, 330, 262, 196]); showToast('Timber! 🌲');
+  }
+  function chop() {
+    const c = chopNear;
+    if (!c || chopAnim || !playing || shopOpen || petOpen || bakeOpen || eatOpen || plantOpen || sleeping || driving) return;
+    chopHits++;
+    chime([140 + Math.random() * 30, 110]); chips(c.x, c.z);
+    if (c.kind === 'tree') c.t.shake = 1;
+    if (c.kind === 'planted') c.pl.shake = 1;
+    if (chopHits < c.hits) { showToast(c.hits - chopHits === 1 ? 'Chop chop! 🪓 One more!' : 'Chop! 🪓 Keep going!'); el.focus(); return; }
+    chopHits = 0;
+    if (c.kind === 'tree') {
+      const t = c.t, tr = t.trunk.clone(), lv = t.leaves.clone(); tr.position.set(0, 0.8, 0); lv.position.set(0, 2.6, 0);
+      setTreeDown(t, true);
+      fallOver([tr, lv], t.x, t.z, () => { save.chopped[t.i] = Date.now(); addWood(3, 'Chop the stump to clear it away for good, or it grows back in 5 minutes.'); });
+    } else if (c.kind === 'stump') {
+      const t = c.t; t.cleared = true; t.stump.visible = false; save.cleared[t.i] = true; delete save.chopped[t.i];
+      chime([523, 392]); addWood(1, 'The stump is gone for good! Now you can plant something here. 🌱');
+    } else {
+      const pl = c.pl, i = planted.indexOf(pl);
+      planted.splice(i, 1); save.trees.splice(save.trees.indexOf(pl.t), 1); store();
+      scene.remove(pl.g); pl.g.position.set(0, 0, 0);
+      fallOver([pl.g], pl.t.x, pl.t.z, () => addWood(3, 'Your tree is cleared away for good.'));
+    }
+    el.focus();
+  }
+  function addWood(n, extra) {
+    save.wood = (save.wood || 0) + n; store(); updateCarrots();
+    chime([523, 659, 784]); showToast('You got ' + n + ' wood! ' + '🪵'.repeat(n) + ' ' + extra);
+  }
+  chopEl.addEventListener('click', chop);
+  addEventListener('keydown', (e) => { if (e.code === 'KeyX' && !e.repeat) chop(); });
+  let regrowCheck = 0;
+  function updateChop(now, dt) {
+    if (chopAnim) {
+      const a = chopAnim; a.t += dt;
+      const k = Math.min(1, a.t / 0.9);
+      a.pivot.setRotationFromAxisAngle(a.ax, k * k * Math.PI / 2);
+      if (a.t > 1.6) { scene.remove(a.pivot); chopAnim = null; a.done(); }
+    }
+    treeSpots.forEach((t) => { if (t.shake > 0) { t.shake = Math.max(0, t.shake - dt * 4); t.leaves.position.x = t.x + Math.sin(now / 25) * 0.12 * t.shake; } });
+    planted.forEach((pl) => { if (pl.shake > 0) { pl.shake = Math.max(0, pl.shake - dt * 4); pl.g.position.x = pl.t.x + Math.sin(now / 25) * 0.1 * pl.shake; } });
+    regrowCheck -= dt;
+    if (regrowCheck <= 0) {
+      regrowCheck = 2;
+      treeSpots.forEach((t) => { if (t.down && !t.cleared && save.chopped[t.i] && Date.now() - save.chopped[t.i] > REGROW_MS && Math.hypot(player.x - t.x, player.z - t.z) > 2) { setTreeDown(t, false); delete save.chopped[t.i]; store(); } });
+    }
+    let best = null, bd = 1.9;
+    if (!driving && !toyRun && !chopAnim) chopTargets().forEach((c) => { const d = Math.hypot(player.x - c.x, player.z - c.z); if (d < bd) { bd = d; best = c; } });
+    const key = best ? best.kind + (best.t ? best.t.i : best.pl.t.at) : '';
+    if (key !== (chopNear ? chopNear.key : '')) chopHits = 0;
+    if (best) best.key = key;
+    chopNear = best;
+    const want = chopNear && talkBtn.hidden ? (chopNear.kind === 'stump' ? '🪓 Chop the stump (X)' : '🪓 Chop the tree (X)') : '';
+    if (chopEl.textContent !== want) chopEl.textContent = want;
+    if (chopEl.hidden !== !want) chopEl.hidden = !want;
   }
 
   let lastX = 0, lastZ = 0, walkT = 0;
@@ -2887,7 +2985,7 @@
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     updateBelt(dt);
     updateToys(dt);
-    if (playing) { updateTownsfolk(now, dt); updatePeeky(now, dt); }
+    if (playing) { updateTownsfolk(now, dt); updatePeeky(now, dt); updateChop(now, dt); }
     if (playing && !shopOpen && !petOpen && !bakeOpen && !eatOpen && !plantOpen && !sleeping) {
       if (driving) updateDrive(dt);
       else if (toyRun) runToy(now, dt);
